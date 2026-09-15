@@ -1,0 +1,25 @@
+# ---- 构建产物（Conan / CMake） ----
+example/build/
+/build/
+/build-*/
+
+# ---- Conan 部署产物（conan install --deployer=direct_deploy） ----
+pylib/
+
+# ---- 运行 / 调试产出 ----
+middle_data/
+out/
+pcd_im_trace.txt
+*.log
+
+# ---- Optuna HPO 试验目录 ----
+optuna_trials_*/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store

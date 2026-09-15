@@ -1,0 +1,14 @@
+[settings]
+os=Linux
+arch=armv8
+compiler=gcc
+compiler.version=12
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+build_type=Release
+
+[tool_requires]
+arm-toolchain/12.3.rel1
+
+[conf]
+tools.build:jobs=4
