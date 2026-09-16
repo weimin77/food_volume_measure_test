@@ -2,6 +2,7 @@
 example/build/
 /build/
 /build-*/
+middle_clouds/
 
 # ---- Conan 部署产物（conan install --deployer=direct_deploy） ----
 pylib/
