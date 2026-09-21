@@ -12,8 +12,8 @@
 #include <iostream>
 #include <string>
 
-#include "volume_log.hpp"
-#include "volume_measurement.hpp"
+#include "log.hpp"
+#include "measurement.hpp"
 
 
 
@@ -30,10 +30,10 @@ void print_usage(const char* exe) {
 }
 
 // 打印一次测量的完整诊断信息，含逐连通块明细。
-void print_estimate(const vm::VolumeEstimate& est) {
+void print_estimate(const VolumeEstimate& est) {
     std::cout << "\n=== 测量结果 ===\n";
-    std::cout << "状态                : " << vm::status_to_string(est.status) << "\n";
-    if (est.status != vm::MeasurementStatus::kSuccess) {
+    std::cout << "状态                : " << status_to_string(est.status) << "\n";
+    if (est.status != MeasurementStatus::kSuccess) {
         std::cout << "失败原因            : " << est.message << "\n";
         return;
     }
@@ -61,7 +61,7 @@ void print_estimate(const vm::VolumeEstimate& est) {
     std::cout << "选中块点数          : " << est.selected_cluster_points << "\n";
 
     for (std::size_t i = 0; i < est.component_estimates.size(); ++i) {
-        const vm::ComponentVolumeEstimate& c = est.component_estimates[i];
+        const ComponentVolumeEstimate& c = est.component_estimates[i];
         const int label = (i < est.selected_cluster_labels.size()) ? est.selected_cluster_labels[i] : -1;
         std::cout << "  块[" << label << "] 体积 " << std::fixed << std::setprecision(3) << c.volume_cm3 << " cm^3"
                   << " | 实测格 " << c.measured_cells << " 补洞格 " << c.interpolated_cells << " | 最大高度 "
@@ -126,12 +126,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    vm::log_set_level(vm::LogLevel::kInfo);
-    vm::log_set_console(true);
-    vm::log_set_file("pcd_im_trace.txt", vm::LogFileMode::kTruncate);
+    log_set_level(LogLevel::kInfo);
+    log_set_console(true);
+    log_set_file("pcd_im_trace.txt", LogFileMode::kTruncate);
 
-    const vm::PointCloud baseline = vm::load_pcd(baseline_path);
-    const vm::PointCloud food = vm::load_pcd(food_path);
+    const PointCloud baseline = load_pcd(baseline_path);
+    const PointCloud food = load_pcd(food_path);
     if (baseline.points.empty() || food.points.empty()) {
         std::cerr << "点云加载失败\n";
         return 1;
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
     std::cout << "baseline 点数       : " << baseline.points.size() << "\n";
     std::cout << "food 点数           : " << food.points.size() << "\n";
 
-    vm::FoodVolumeMeasurer measurer;
+    FoodVolumeMeasurer measurer;
     if (!config_path.empty() && !measurer.load_config_from_json(config_path)) {
         std::cerr << "警告: 配置加载失败(" << config_path << ")，使用内置默认值\n";
     }
@@ -147,12 +147,12 @@ int main(int argc, char* argv[]) {
         measurer.set_save_middle_cloud(true).set_middle_cloud_dir(middle_dir);
     }
 
-    const vm::VolumeEstimate est = measurer.set_baseline({baseline}).set_food(food).run();
+    const VolumeEstimate est = measurer.set_baseline({baseline}).set_food(food).run();
     print_estimate(est);
-    if (dump_middle && est.status == vm::MeasurementStatus::kSuccess) {
+    if (dump_middle && est.status == MeasurementStatus::kSuccess) {
         std::cout << "\n各阶段中间点云已写入 : " << middle_dir << "/\n";
     }
 
-    vm::log_close_file();
-    return est.status == vm::MeasurementStatus::kSuccess ? 0 : 1;
+    log_close_file();
+    return est.status == MeasurementStatus::kSuccess ? 0 : 1;
 }

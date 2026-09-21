@@ -5,7 +5,7 @@
 **RK3562（aarch64）** 两套目标上验证库的消费接口、算法结果与运行性能。
 
 与库仓库的关系：这里只做**消费者**——依赖 Conan 包 `food_volume_measure/0.1.0`，
-只用安装出来的公开头（`volume_types.hpp` / `volume_measurement.hpp` / `volume_log.hpp`），
+只用安装出来的公开头（`types.hpp` / `measurement.hpp` / `log.hpp`），
 不触碰库的 `src/` 私有实现。
 
 ## 目录结构

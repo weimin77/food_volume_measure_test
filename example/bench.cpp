@@ -18,8 +18,8 @@
 
 #include <sys/resource.h>
 
-#include "volume_log.hpp"
-#include "volume_measurement.hpp"
+#include "log.hpp"
+#include "measurement.hpp"
 
 
 
@@ -69,18 +69,18 @@ int main(int argc, char* argv[]) {
     const std::string config_path = (argc >= 5) ? argv[4] : "";
 
     // 关闭日志输出，避免 I/O 干扰计时。
-    vm::log_set_level(vm::LogLevel::kError);
-    vm::log_set_console(false);
+    log_set_level(LogLevel::kError);
+    log_set_console(false);
 
     // 计时前一次性载入点云，只测量算法本身。
-    const vm::PointCloud baseline = vm::load_pcd(baseline_path);
-    const vm::PointCloud food = vm::load_pcd(food_path);
+    const PointCloud baseline = load_pcd(baseline_path);
+    const PointCloud food = load_pcd(food_path);
     if (baseline.points.empty() || food.points.empty()) {
         std::cerr << "点云加载失败\n";
         return 1;
     }
 
-    vm::FoodVolumeMeasurer measurer;
+    FoodVolumeMeasurer measurer;
     if (!config_path.empty() && !measurer.load_config_from_json(config_path)) {
         std::cerr << "警告: 配置加载失败(" << config_path << ")，使用内置默认值\n";
     }
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
     double total_wall = 0.0;
     double total_cpu = 0.0;
-    vm::VolumeEstimate last{};
+    VolumeEstimate last{};
     for (int i = 0; i < runs; ++i) {
         rusage cpu0;
         getrusage(RUSAGE_SELF, &cpu0);
@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
 
         total_wall += wall_ms(t0, Clock::now());
         total_cpu += cpu_ms_since(cpu0);
-        if (i == 0 && last.status != vm::MeasurementStatus::kSuccess) {
-            std::cerr << "测量失败: status=" << vm::status_to_string(last.status) << " (" << last.message << ")\n";
+        if (i == 0 && last.status != MeasurementStatus::kSuccess) {
+            std::cerr << "测量失败: status=" << status_to_string(last.status) << " (" << last.message << ")\n";
         }
     }
 
@@ -123,5 +123,5 @@ int main(int argc, char* argv[]) {
     std::cout << std::fixed << std::setprecision(3) << "体积: " << last.volume_cm3 << " cm^3\n";
     std::cout << "峰值内存 max_rss: " << std::setprecision(2) << max_rss_mb << " MB\n";
 
-    return last.status == vm::MeasurementStatus::kSuccess ? 0 : 1;
+    return last.status == MeasurementStatus::kSuccess ? 0 : 1;
 }

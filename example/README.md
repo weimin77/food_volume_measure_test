@@ -8,7 +8,7 @@
 - `bench` — 性能基准：`run()` 端到端耗时 + CPU 时间 + 进程峰值内存
 
 两者都是纯消费者：只 include 安装出来的公开头
-（`volume_types.hpp` / `volume_measurement.hpp` / `volume_log.hpp`），
+（`types.hpp` / `measurement.hpp` / `log.hpp`），
 不依赖任何 `src/` 下的私有实现。
 
 ## 前置：把库装进本地 Conan 缓存
