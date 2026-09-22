@@ -23,7 +23,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from vm_module import TEST_DATA, load_vm  # noqa: E402
 
-BASELINE_PCD = TEST_DATA / "d405_260322274982_20260805_142739.pcd"
+BASELINE_PCD = TEST_DATA / "base.pcd"
 FOOD_DIR = TEST_DATA / "food"
 OUT_JSON = TEST_DATA / "ground_truth.json"
 
